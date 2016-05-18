@@ -3,28 +3,30 @@
 
 /* Plik zawiera implementację planszy(board) do gry w warcaby. */
 
+#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
+
+#include "pawn.hh"
+
 class Board
 {
 private:
 
-  // Tablica pionków
-  // Pawn*** board
+  // Plansza (czyli dwuwymiarowa tablica wskaźników na pionki)
+  Pawn* board[TILES_COUNT][TILES_COUNT];
 public:
 
   // Konstruktor inicjujący planszę
-  Board() {}
+  Board();
 
   // Utwórz nowy pionek na zadanej pozycji
-  Pawn& createPawn(Vector position);
+  Pawn* createPawn(Vector position, Color color);
   
   // Pobierz pionek z określonej pozycji
-  Pawn& getPawn(Vector position);
+  Pawn* getPawn(Vector position);
 
-  // Przesuń pionek na określoną pozycję(target)
-  void setPawnPosition(Vector position, Vector target);
-  
-  // Przesuń pionek o określony wektor
-  void movePawn(Vector position, Vector vector);
+  // Przesuń pionek na określoną pozycję
+  bool movePawn(Vector position, Vector target);
 
   // Czy ruch jest możliwy (czy dana pozycja jest osiągalna)
   bool isMovementPossible(Vector position, Vector target);
@@ -33,10 +35,10 @@ public:
   Pawn deletePawn(Vector position);
 
   // Rysuj planszę wraz z pionkami
-  void draw(sf::RenderWindow window);
+  void draw(sf::RenderWindow& window);
 
   // Destruktor
-  ~Board();
+  ~Board() {}
   
 };
 
