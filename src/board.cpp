@@ -90,3 +90,24 @@ void Board::draw(sf::RenderWindow& window)
 	}
     }
 }
+
+Pawn* Board::selectPawn(Vector position)
+{
+  // Jeżeli pionek na tym polu istnieje
+  if(board[position.x][position.y])
+    {
+      // Odznaczamy wszystkie pionki
+      for(int x = 0; x<TILES_COUNT; ++x)
+	for(int y = 0; y<TILES_COUNT; ++y)
+	  if(board[x][y]) board[x][y]->deselect();
+
+      // Zaznaczamy właściwy
+      board[position.x][position.y]->select();
+
+      // Zwracamy zaznaczony
+      return board[position.x][position.y];
+    }
+
+  // Zwracamy NULL, bo pionek nie istnieje
+  return NULL;
+}

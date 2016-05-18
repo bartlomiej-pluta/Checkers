@@ -5,6 +5,9 @@
 
 /* Plik zawiera definicje stałych globalnych oraz przedefiniowanie istniejących typów. */
 
+// Tytuł gry (widoczny m.in. na pasku z tytułem okna)
+//const char* GAME_TITLE = "Warcaby";
+
 // Ilość pól w każdym wymiarze
 const int TILES_COUNT = 10;
 

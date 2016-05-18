@@ -37,6 +37,9 @@ public:
   // Rysuj planszę wraz z pionkami
   void draw(sf::RenderWindow& window);
 
+  // Zaznacz pionek o zadanej pozycji
+  Pawn* selectPawn(Vector position);
+
   // Destruktor
   ~Board() {}
   
