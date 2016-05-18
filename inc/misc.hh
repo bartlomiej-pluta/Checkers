@@ -25,13 +25,17 @@ struct Vector
 
   // Operator dodawania wektorów
   Vector operator+(const Vector& v) { return Vector(x+v.x, y+v.y); }
+  Vector& operator+=(const Vector& v) { return *this = *this + v; }
 
   // Operator odejmowania wektorów
   Vector operator-(const Vector& v) { return Vector(x-v.x, y-v.y); }
+  Vector& operator-=(const Vector& v) { return *this = *this - v; }
 
   // Mnożenie wektora przez liczbę
-  Vector operator*(int a) { return Vector(a*v.x, a*v.y); }
-  Vector operator*(float a) { return Vector(a*v.x, a*v.y); }
+  Vector operator*(int a) { return Vector(a*x, a*y); }
+  Vector operator*(float a) { return Vector(a*x, a*y); }
+  Vector operator*=(int a) { return *this = *this*a; }
+  Vector operator*=(float a) { return *this = *this*a; }
   
 };
 

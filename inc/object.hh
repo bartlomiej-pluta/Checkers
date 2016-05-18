@@ -7,7 +7,7 @@
  * Nie definiuje ona jeszcze żadnych kształtów czy kolorów, jest więc zatem klasą
  * w zasadzie czysto abstrakcyjną. */
 
-#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 
 #include "def.hh"
 #include "misc.hh"
@@ -20,17 +20,22 @@ private:
   Vector position;
 public:
 
+  Object(Vector _position) : position(_position) {}
+  
+  // Wirtualny destruktor
+  virtual ~Object() {}
+  
   // Pobierz pozycję obiektu
   Vector getPosition() const { return position; }
 
   // Ustaw pozycję obiektu
-  void setPosition(const Vector& _position) { position = _position }
+  void setPosition(const Vector& _position) { position = _position; }
 
   // Przesuń obiekt o wektor
-  void move(const Vector& vector) {}
+  void move(const Vector& vector) { position += vector; }
 
   // Rysuj obiekt
-  void draw(sf::RenderWindow window) = 0;
+  virtual void draw(sf::RenderWindow& window) = 0;
 };
 
 #endif
