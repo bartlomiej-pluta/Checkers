@@ -2,11 +2,12 @@
 #define DEF_HH
 
 #include <SFML/Window.hpp>
+#include <string>
 
 /* Plik zawiera definicje stałych globalnych oraz przedefiniowanie istniejących typów. */
 
 // Tytuł gry (widoczny m.in. na pasku z tytułem okna)
-//const char* GAME_TITLE = "Warcaby";
+const std::string GAME_TITLE = "Warcaby";
 
 // Ilość pól w każdym wymiarze
 const int TILES_COUNT = 10;
@@ -27,7 +28,10 @@ const int QUEEN_PAWN_OUTLINE_THICKNESS = 4;
 const int WINDOW_WIDTH = TILES_COUNT * TILE_SIZE;
 
 // Wysokość okna
-const int WINDOW_HEIGHT = TILES_COUNT * TILE_SIZE;
+const int WINDOW_HEIGHT = TILES_COUNT * TILE_SIZE + 30;
+
+// Wartość nieskończoności
+const int INF = 9999;
 
 // Przedefiniowanie sf::Vector2f na RealVector
 typedef sf::Vector2f RealVector;

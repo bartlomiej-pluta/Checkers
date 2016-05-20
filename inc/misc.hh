@@ -1,6 +1,7 @@
 #ifndef MISC_HH
 #define MISC_HH
 
+#include <cmath>
 #include <SFML/Window.hpp>
 
 #include "def.hh"
@@ -8,9 +9,12 @@
 /* Struktura reprezentująca wektor w układzie odniesienia planszy do gier (a nie według rzeczywistych współrzędnych - pikseli). */
 struct Vector
 {
+public:
   unsigned int x;
   unsigned int y;
 
+public:
+  
   // Konstruktor tworzący parę (_x, _y)
   Vector(unsigned int _x, unsigned int _y) : x(_x), y(_y) {}
   
@@ -36,7 +40,15 @@ struct Vector
   Vector operator*(float a) { return Vector(a*x, a*y); }
   Vector operator*=(int a) { return *this = *this*a; }
   Vector operator*=(float a) { return *this = *this*a; }
+
+  // Porównanie wektorów
+  bool operator==(Vector v) { return ((x == v.x) && (y == v.y)); }
+  
+  // Norma w przestrzeni Manhattan
+  int manhattanNorm() const { return abs(x) + abs(y); }
   
 };
+
+
 
 #endif
