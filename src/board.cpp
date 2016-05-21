@@ -17,6 +17,14 @@ void Board::initBoard()
   for(int i=0; i<TILES_COUNT; i=i+2) createPawn(Vector(i, TILES_COUNT-1), CL_WHITE);
   for(int i=1; i<TILES_COUNT; i=i+2) createPawn(Vector(i, TILES_COUNT-2), CL_WHITE);
   for(int i=0; i<TILES_COUNT; i=i+2) createPawn(Vector(i, TILES_COUNT-3), CL_WHITE);
+
+  createPawn(Vector(5, 4), CL_WHITE);
+  //  createPawn(Vector(4, 4), CL_BLACK);
+  // createPawn(Vector(5, 3), CL_BLACK);
+  // createPawn(Vector(6, 4), CL_BLACK);
+  // createPawn(Vector(5, 5), CL_BLACK);
+  board[5][4]->upgrade();
+
 }
 
 Pawn* Board::createPawn(Vector position, Color color)
@@ -145,55 +153,14 @@ Pawn* Board::selectPawn(Vector position)
 
 bool Board::isPossibleBeating(Vector position)
 {
-  // Pobieramy wskaźnik do pionka znajdującego się na zadanej pozycji
-  Pawn* position_pawn = getPawn(position);
-
-  // Jeżeli go tam nie ma, zwracamy false
-  if(!position_pawn) return false;
-  
-  // Zabezpieczenie przed przekroczeniem indeksów
-  if((getPawn(position)->getPosition().x > 1 &&
-     getPawn(position)->getPosition().y > 1) &&
-     (getPawn(position)->getPosition().x < TILES_COUNT-1 &&
-      getPawn(position)->getPosition().y < TILES_COUNT-1))
-
-    // Jeżeli na polu przesuniętym o wektor [1,1] jest pionek, i jest on koloru przeciwnego
-    // a za pole zanim jest puste, zwracamy true
-    if(getPawn(position+Vector(1, 1)) &&
-       (getPawn(position+Vector(1, 1))->getColor() != position_pawn->getColor()) &&
-       (!getPawn(position+Vector(2, 2)))) return true;
-
-  // ... analogicznie w pozostałych kierunkach
-  
-  // Zabezpieczenie przed przekroczeniem indeksów
-  if((getPawn(position)->getPosition().x > 1 &&
-     getPawn(position)->getPosition().y > 1) &&
-     (getPawn(position)->getPosition().x < TILES_COUNT-1 &&
-      getPawn(position)->getPosition().y < TILES_COUNT-1))
-    
-    if(getPawn(position+Vector(1, -1)) &&
-       (getPawn(position+Vector(1, -1))->getColor() != position_pawn->getColor()) &&
-       (!getPawn(position+Vector(2, -2)))) return true;
-
-  // Zabezpieczenie przed przekroczeniem indeksów
-  if(getPawn(position)->getPosition().x > 1 &&
-     getPawn(position)->getPosition().y > 1)
-    
-    if(getPawn(position+Vector(-1, 1)) &&
-       (getPawn(position+Vector(-1, 1))->getColor() != position_pawn->getColor()) &&
-       (!getPawn(position+Vector(-2, 2)))) return true;
-
-  // Zabezpieczenie przed przekroczeniem indeksów
-  if(getPawn(position)->getPosition().x > 1 &&
-     getPawn(position)->getPosition().y > 1)
-   
-    if(getPawn(position+Vector(-1, -1)) &&
-     (getPawn(position+Vector(-1, -1))->getColor() != position_pawn->getColor()) &&
-     (!getPawn(position+Vector(-2, -2)))) return true;
-
-  return false;
-    
+  return getPossibleBeatings(position).size();
 }
+
+bool Board::arePossibleGlobalBeatings(Color color)
+{
+  return getPossibleGlobalBeatings(color).size();
+}
+
 
 std::list<Movement> Board::getPossibleBeatings(Vector position)
 {
@@ -206,28 +173,69 @@ std::list<Movement> Board::getPossibleBeatings(Vector position)
   // Jeżeli go tam nie ma, zwracamy pusty kontener
   if(!position_pawn) return beatings;
 
-  // Jeżeli na polu przesuniętym o wektor [1,1] jest pionek, i jest on koloru przeciwnego
-  // a za pole zanim jest puste, dorzucamy tą pozycję do kontenera
-  if(position.x < TILES_COUNT-1 && position.y < TILES_COUNT-1)
-  if(getPawn(position+Vector(1, 1)) &&
-     (getPawn(position+Vector(1, 1))->getColor() != position_pawn->getColor()) &&
-     (!getPawn(position+Vector(2, 2)))) beatings.push_back(Movement(position, position+Vector(2, 2)));
+  //// Bicie normalnymi pionkami
 
-  // ... analogicznie w pozostałych kierunkach
-  if(position.x < TILES_COUNT-1 && position.y > 1)
-  if(getPawn(position+Vector(1, -1)) &&
-     (getPawn(position+Vector(1, -1))->getColor() != position_pawn->getColor()) &&
-     (!getPawn(position+Vector(2, -2)))) beatings.push_back(Movement(position, position+Vector(2, -2)));
+  // Bicie o wektor [-2, -2]
+  if((position.x >= 2 && position.y >= 2)                                        &&  // Jeżeli bicie nie wyjdzie poza planszę
+     (getPawn(position+Vector(-1, -1)))                                          &&  // Jeżeli istnieje bity pionek
+     (getPawn(position+Vector(-1, -1))->getColor() != position_pawn->getColor()) &&  // Jeżeli jest to pionek przeciwnego koloru
+     (!getPawn(position+Vector(-2, -2))))                                            // Jeżeli pole docelowe jest puste
+    beatings.push_back(Movement(position, position+Vector(-2, -2)));                 // Dorzuć ruch do listy
 
-  if(position.x > 1 && position.y < TILES_COUNT-1)
-  if(getPawn(position+Vector(-1, 1)) &&
-     (getPawn(position+Vector(-1, 1))->getColor() != position_pawn->getColor()) &&
-     (!getPawn(position+Vector(-2, 2)))) beatings.push_back(Movement(position, position+Vector(-2, 2)));
+  // Bicie o wektor [-2, 2]
+  if((position.x >= 2 && position.y < TILES_COUNT-2)                            &&  // Jeżeli bicie nie wyjdzie poza planszę
+     (getPawn(position+Vector(-1, 1)))                                          &&  // Jeżeli istnieje bity pionek
+     (getPawn(position+Vector(-1, 1))->getColor() != position_pawn->getColor()) &&  // Jeżeli jest to pionek przeciwnego koloru
+     (!getPawn(position+Vector(-2, 2))))                                            // Jeżeli pole docelowe jest puste
+    beatings.push_back(Movement(position, position+Vector(-2, 2)));                 // Dorzuć ruch do listy
 
-  if(position.x > 1 && position.y > 1)
-  if(getPawn(position+Vector(-1, -1)) &&
-     (getPawn(position+Vector(-1, -1))->getColor() != position_pawn->getColor()) &&
-     (!getPawn(position+Vector(-2, -2)))) beatings.push_back(Movement(position, position+Vector(-2, -2)));
+  // Bicie o wektor [2, 2]
+  if((position.x < TILES_COUNT-2 && position.y < TILES_COUNT-2)                &&  // Jeżeli bicie nie wyjdzie poza planszę
+     (getPawn(position+Vector(1, 1)))                                          &&  // Jeżeli istnieje bity pionek
+     (getPawn(position+Vector(1, 1))->getColor() != position_pawn->getColor()) &&  // Jeżeli jest to pionek przeciwnego koloru
+     (!getPawn(position+Vector(2, 2))))                                            // Jeżeli pole docelowe jest puste
+    beatings.push_back(Movement(position, position+Vector(2, 2)));                 // Dorzuć ruch do listy
+
+  // Bicie o wektor [2, -2]
+  if((position.x < TILES_COUNT-2 && position.y >= 2)                            &&  // Jeżeli bicie nie wyjdzie poza planszę
+     (getPawn(position+Vector(1, -1)))                                          &&  // Jeżeli istnieje bity pionek
+     (getPawn(position+Vector(1, -1))->getColor() != position_pawn->getColor()) &&  // Jeżeli jest to pionek przeciwnego koloru
+     (!getPawn(position+Vector(2, -2))))                                            // Jeżeli pole docelowe jest puste
+    beatings.push_back(Movement(position, position+Vector(2, -2)));                 // Dorzuć ruch do listy
+  
+  //// Bicie damkami
+  
+  // Jeżeli pionek jest damką posiada dodatkowe możliwości bicia
+  if(getPawn(position)->isQueen())
+    {
+      // Bicie o wektor [-2, 0]
+      if((position.x >= 2)                                                          &&  // Jeżeli bicie nie wyjdzie poza planszę
+	 (getPawn(position+Vector(-1, 0)))                                          &&  // Jeżeli istnieje bity pionek
+	 (getPawn(position+Vector(-1, 0))->getColor() != position_pawn->getColor()) &&  // Jeżeli jest to pionek przeciwnego koloru
+	 (!getPawn(position+Vector(-2, 0))))                                            // Jeżeli pole docelowe jest puste
+	beatings.push_back(Movement(position, position+Vector(-2, 0)));                 // Dorzuć ruch do listy
+
+      // Bicie o wektor [0, 2]
+      if((position.y < TILES_COUNT-2)                                              &&  // Jeżeli bicie nie wyjdzie poza planszę
+	 (getPawn(position+Vector(0, 1)))                                          &&  // Jeżeli istnieje bity pionek
+	 (getPawn(position+Vector(0, 1))->getColor() != position_pawn->getColor()) &&  // Jeżeli jest to pionek przeciwnego koloru
+	 (!getPawn(position+Vector(0, 2))))                                            // Jeżeli pole docelowe jest puste
+	beatings.push_back(Movement(position, position+Vector(0, 2)));                 // Dorzuć ruch do listy
+
+      // Bicie o wektor [2, 0]
+      if((position.x < TILES_COUNT-2)                                              &&  // Jeżeli bicie nie wyjdzie poza planszę
+	 (getPawn(position+Vector(1, 0)))                                          &&  // Jeżeli istnieje bity pionek
+	 (getPawn(position+Vector(1, 0))->getColor() != position_pawn->getColor()) &&  // Jeżeli jest to pionek przeciwnego koloru
+	 (!getPawn(position+Vector(2, 0))))                                            // Jeżeli pole docelowe jest puste
+	beatings.push_back(Movement(position, position+Vector(2, 0)));                 // Dorzuć ruch do listy
+
+      // Bicie o wektor [0, -2]
+      if((position.y < TILES_COUNT-2)                                               &&  // Jeżeli bicie nie wyjdzie poza planszę
+	 (getPawn(position+Vector(0, -1)))                                          &&  // Jeżeli istnieje bity pionek
+	 (getPawn(position+Vector(0, -1))->getColor() != position_pawn->getColor()) &&  // Jeżeli jest to pionek przeciwnego koloru
+	 (!getPawn(position+Vector(0, -2))))                                            // Jeżeli pole docelowe jest puste
+	beatings.push_back(Movement(position, position+Vector(0, -2)));                 // Dorzuć ruch do listy
+    }
 
   // Zwracamy kontener
   return beatings;
@@ -243,46 +251,105 @@ std::list<Movement> Board::getPossibleMovements(Vector position)
   
   // Jeżeli pionek nie istnieje, zwróć pustą listę
   if(!getPawn(position)) return movements;
-
-  // Jeżeli to ruch czarnego pionka
-  if(getPawn(position)->getColor() == CL_BLACK)
+  
+  // Jeżeli pionek jest damką
+  if(getPawn(position)->isQueen())
     {
-      // Zabezpieczenie przed przekroczeniem indeksów
-      if(getPawn(position)->getPosition().x > 0 &&
-	 getPawn(position)->getPosition().y > 0)
-	
-	// Jeżeli miejsce 1 jest wolne, wrzuć do listy
+
+      // Jeżeli ruch w górę-lewo jest możliwy (jest puste miejsce) dorzuć ruch do listy
+      if(position.x >= 1 && position.y >= 1)
+	if(!getPawn(position+Vector(-1, -1))) movements.push_back(Movement(position, position+Vector(-1, -1)));
+	  
+      // Jeżeli ruch w górę-prawo jest możliwy (jest puste miejsce) dorzuć ruch do listy
+      if(position.x < TILES_COUNT-1 && position.y >= 1)
+	if(!getPawn(position+Vector(1, -1))) movements.push_back(Movement(position, position+Vector(1, -1)));
+
+      // Jeżeli ruch w dół-lewo jest możliwy (jest puste miejsce) dorzuć ruch do listy
+      if(position.x >= 1 && position.y < TILES_COUNT-1)
+	if(!getPawn(position+Vector(-1, 1))) movements.push_back(Movement(position, position+Vector(-1, 1)));
+	  
+      // Jeżeli ruch w dół-prawo jest możliwy (jest puste miejsce) dorzuć ruch do listy
+      if(position.x < TILES_COUNT-1 && position.y < TILES_COUNT-1)
 	if(!getPawn(position+Vector(1, 1))) movements.push_back(Movement(position, position+Vector(1, 1)));
 
-      // Zabezpieczenie przed przekroczeniem indeksów
-      if(getPawn(position)->getPosition().x > 0 &&
-	 getPawn(position)->getPosition().y > 0)
-	
-	// Jeżeli miejsce 2 jest wolne, wrzuć do listy
-	if(!getPawn(position+Vector(-1, 1))) movements.push_back(Movement(position, position+Vector(-1, 1)));
+      // Jeżeli ruch w górę jest możliwy (jest puste miejsce) dorzuć ruch do listy
+      if(position.y >= 1)
+	if(!getPawn(position+Vector(0, -1))) movements.push_back(Movement(position, position+Vector(0, -1)));
+
+      // Jeżeli ruch w dół jest możliwy (jest puste miejsce) dorzuć ruch do listy
+      if(position.y < TILES_COUNT-1)
+	if(!getPawn(position+Vector(0, 1))) movements.push_back(Movement(position, position+Vector(0, 1)));
+
+      // Jeżeli ruch w lewo jest możliwy (jest puste miejsce) dorzuć ruch do listy
+      if(position.x >= 1)
+	if(!getPawn(position+Vector(-1, 0))) movements.push_back(Movement(position, position+Vector(-1, 0)));
+
+      // Jeżeli ruch w prawo jest możliwy (jest puste miejsce) dorzuć ruch do listy
+      if(position.x < TILES_COUNT-1)
+	if(!getPawn(position+Vector(1, 0))) movements.push_back(Movement(position, position+Vector(1, 0)));
+
+
     }
 
-  // Jeżeli to ruch białego pionka
-  if(getPawn(position)->getColor() == CL_WHITE)
+  // Jeżeli jest to zwykły pionek
+  else
     {
-      // Zabezpieczenie przed przekroczeniem indeksów
-      if(getPawn(position)->getPosition().x > 1 &&
-	 getPawn(position)->getPosition().y > 1)
-	
-	// Jeżeli miejsce 1 jest wolne, wrzuć do listy
-	if(!getPawn(position+Vector(-1, -1))) movements.push_back(Movement(position, position+Vector(-1, -1)));
+      // Jeżeli to ruch białego pionka
+      if(getPawn(position)->getColor() == CL_WHITE)
+	{
+	  // Jeżeli ruch w górę-lewo jest możliwy (jest puste miejsce) dorzuć ruch do listy
+	  if(position.x >= 1 && position.y >= 1)
+	    if(!getPawn(position+Vector(-1, -1))) movements.push_back(Movement(position, position+Vector(-1, -1)));
+	  
+	  // Jeżeli ruch w górę-prawo jest możliwy (jest puste miejsce) dorzuć ruch do listy
+	  if(position.x < TILES_COUNT-1 && position.y >= 1)
+	    if(!getPawn(position+Vector(1, -1))) movements.push_back(Movement(position, position+Vector(1, -1)));
+	}
 
-      // Jeżeli miejsce 2 jest wolne, wrzuć do listy
-      if(position.y > 1)
-	if(!getPawn(position+Vector(1, -1))) movements.push_back(Movement(position, position+Vector(1, -1)));
+      // Jeżeli to ruch czarnego pionka
+      else
+	{
+	  // Jeżeli ruch w dół-lewo jest możliwy (jest puste miejsce) dorzuć ruch do listy
+	  if(position.x >= 1 && position.y < TILES_COUNT-1)
+	    if(!getPawn(position+Vector(-1, 1))) movements.push_back(Movement(position, position+Vector(-1, 1)));
+	  
+	  // Jeżeli ruch w dół-prawo jest możliwy (jest puste miejsce) dorzuć ruch do listy
+	  if(position.x < TILES_COUNT-1 && position.y < TILES_COUNT-1)
+	    if(!getPawn(position+Vector(1, 1))) movements.push_back(Movement(position, position+Vector(1, 1)));	  
+	}
     }
   return movements;
 }
 
-std::list<Movement> Board::getPossibleMovements(Color color)
+std::list<Movement> Board::getPossibleGlobalBeatings(Color color)
 {
   std::list<Movement> movements;
 
+  // Dla każdych pionków
+  for(int x = 0; x < TILES_COUNT; ++x)
+    for(int y = 0; y < TILES_COUNT; ++y)
+      {
+	// Jeżeli to jest pionek
+	if(board[x][y])
+	  {
+	    // Jeżeli jest to pionek o który nam chodzi
+	    if(board[x][y]->getColor() == color)
+
+	      // Dodaj wszystkie jego możliwe ruchy do listy ruchów
+	      for(auto m: getPossibleBeatings(Vector(x, y))) movements.push_back(m);
+	  }
+      }
+      
+  return movements;
+}
+
+std::list<Movement> Board::getPossibleGlobalMovements(Color color)
+{
+  std::list<Movement> movements;
+
+  // Jeżeli istnieją bicia zwracamy tylko je
+  if(arePossibleGlobalBeatings(color)) return getPossibleGlobalBeatings(color);
+  
   // Dla każdych pionków
   for(int x = 0; x < TILES_COUNT; ++x)
     for(int y = 0; y < TILES_COUNT; ++y)

@@ -69,6 +69,9 @@ public:
   // Czy bicie z danej pozycji jest możliwe
   bool isPossibleBeating(Vector position);
 
+  // Czy istnieje możliwe bicie dla danego koloru
+  bool arePossibleGlobalBeatings(Color color);
+
   // Kontener możliwych bić
   std::list<Movement> getPossibleBeatings(Vector position);
 
@@ -76,7 +79,10 @@ public:
   std::list<Movement> getPossibleMovements(Vector position);
 
   // Pobierz możliwe ruchy wszystkich pionków danego koloru
-  std::list<Movement> getPossibleMovements(Color color);
+  std::list<Movement> getPossibleGlobalMovements(Color color);
+
+  // Pobierz możliwe bicia wszystkich pionków danego koloru
+  std::list<Movement> getPossibleGlobalBeatings(Color color);
   
   // Usuń pionek z określonej pozycji
   Pawn deletePawn(Vector position);

@@ -129,8 +129,8 @@ void Game::executePlayerRound(sf::Vector2f mouse_position)
   // Pobieramy informacje o pionku(lub jego braku) z interesującego nas pola
   Pawn* ptr = board.getPawn(position);
 
-  // Jeżeli tura należy do gracza, pionek istnieje i należy do gracza oraz ruch nie został jeszcze rozpoczęty:
-  if((round == getPlayerColor()) && ptr && (ptr->getColor() == getPlayerColor()) && (!movements_sequence))
+  // Jeżeli tura należy do gracza, pionek istnieje i należy do gracza
+  if((round == getPlayerColor()) && ptr && (ptr->getColor() == getPlayerColor()))
     {
       // Zaznaczamy pionek i pobieramy do niego wskaźnik
       ptr = board.selectPawn(Vector(position));
@@ -228,7 +228,7 @@ void Game::eventHandler()
 
 	    // Wykonaj turę gracza
 	    executePlayerRound(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
-	    
+
 	}
     }
 }

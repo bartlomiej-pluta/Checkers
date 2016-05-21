@@ -1,10 +1,10 @@
 #include "../inc/minimax.hh"
 
 
-int MiniMax::f1(Board& board, const Color& color)
+int MiniMax::evaluate(Board& board, const Color& color)
 {
   // Wycena
-  int value = 0, tmp_value;
+  int value = 0, pawn_value;
 
   // Wskaźnik na aktualnie oceniany pionek
   Pawn* ptr = NULL;
@@ -19,27 +19,36 @@ int MiniMax::f1(Board& board, const Color& color)
 	if(ptr)
 	  {
 	    // Jeżeli pionek jest damką:
-	    if(ptr->isQueen()) tmp_value = 10;
-	    else tmp_value = 1;
+	    if(ptr->isQueen()) pawn_value = 10;
+	    else pawn_value = 1;
 
-	    // Jeżeli pionek należy do obszaru III -- waga 3
-	    if(((ptr->getPosition().x >= 3) && (ptr->getPosition().y >= 3)) &&
-	       ((ptr->getPosition().x < (TILES_COUNT-3)) && (ptr->getPosition().y < (TILES_COUNT-3))))
-	      tmp_value *= 3;
+	    /*** ZASADA TRZECH OBSZARÓW ***/
+	    {
+	      // Jeżeli pionek należy do obszaru III -- waga 1
+	      if(((ptr->getPosition().x >= 3) && (ptr->getPosition().y >= 3)) &&
+		 ((ptr->getPosition().x < (TILES_COUNT-3)) && (ptr->getPosition().y < (TILES_COUNT-3))))
+		; // więc nie ruszamy
+	      
+	      // Jeżeli pionek należy do obszaru II -- waga 2
+	      else if(((ptr->getPosition().x >= 2) && (ptr->getPosition().y >= 2)) &&
+		      ((ptr->getPosition().x < (TILES_COUNT-2)) && (ptr->getPosition().y < (TILES_COUNT-2))))
+		pawn_value *= 2;
+	      
+	      // W przeciwnym wypadku, zostaje waga 1
+	      else
+		pawn_value *= 3;
 
-	    // Jeżeli pionek należy do obszaru II -- waga 2
-	    else if(((ptr->getPosition().x >= 2) && (ptr->getPosition().y >= 2)) &&
-	       ((ptr->getPosition().x < (TILES_COUNT-2)) && (ptr->getPosition().y < (TILES_COUNT-2))))
-	      tmp_value *= 2;
+	    }
 
-	    // W przeciwnym wypadku, zostaje waga 1
-
+	    /*** MOŻLIWOŚĆ BICIA ***/
+	    if(board.isPossibleBeating(ptr->getPosition())) pawn_value += 5;
+	    
 	    // Jeżeli NIE jest to pionek należący do gracza zdefiniowanego kolorem color
 	    // przemnażamy przez -1
-	    if(ptr->getColor() != color) tmp_value *= -1;
+	    if(ptr->getColor() != color) pawn_value *= -1;
 	    
-	    // Dodajemy tmp_value do wyceny
-	    value += tmp_value;
+	    // Dodajemy pawn_value do wyceny
+	    value += pawn_value;
 	  }
       }
 
@@ -73,7 +82,7 @@ int MiniMax::alphabeta(Board board, int depth, int alpha, int beta, Movement& be
   if(color != AI_COLOR)
     {
       // Dla każdego potomka 
-      for(auto& m: board.getPossibleMovements(color))
+      for(auto& m: board.getPossibleGlobalMovements(color))
 	{
 	  // Tworzymy nowy stan gry
 	  Board new_board(board);
@@ -93,7 +102,7 @@ int MiniMax::alphabeta(Board board, int depth, int alpha, int beta, Movement& be
   else
     
     // Dla każdego potomka 
-    for(auto& m: board.getPossibleMovements(color))
+    for(auto& m: board.getPossibleGlobalMovements(color))
       {
 	// Tworzymy nowy stan gry
 	Board new_board(board);
