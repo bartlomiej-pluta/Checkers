@@ -28,7 +28,10 @@ struct Movement
   bool operator==(const Movement& b) { return ((begin == b.begin) && (end == b.end)); }
 
   // Wypisywanie ruchu do terminala
-  void display() { std::cout << begin.x << ", " << begin.y << "\t->\t" << end.x << ", " << end.y << std::endl; }
+  void display() { begin.display(); std::cout<< "\t->\t"; end.display(); std::cout << std::endl; }
+
+  // Zwraca wektor ruchu
+  Vector getVector() { return end-begin; }
 };
 
 // Klasa implementująca planszę
@@ -42,6 +45,9 @@ private:
   // Zaznaczone kafelki na mapie(ułatwienie dla gracza)
   std::list<Vector> selected_tiles;
   
+  // Zaznaczony ruch na mapie
+  bool is_selected_movement;
+
 public:
 
   // Konstruktor inicjujący planszę
@@ -63,9 +69,15 @@ public:
   // Przesuń pionek na określoną pozycję
   bool movePawn(Movement movement);
 
-  // Czy ruch jest możliwy (czy dana pozycja jest osiągalna)
-  bool isMovementPossible(Movement movement);
+  // Pobierz ilość białych pionków
+  unsigned int getNumberOfWhitePawns() const;
 
+  // Pobierz ilość czarnych pionków
+  unsigned int getNumberOfBlackPawns() const;
+
+  // Promuj na damki te pionki, które doszły na linię promocji
+  void upgrade();
+  
   // Czy bicie z danej pozycji jest możliwe
   bool isPossibleBeating(Vector position);
 
@@ -96,8 +108,11 @@ public:
   // Zaznacz wybrane kafelki na mapie
   void selectTiles(std::list<Vector> tiles) { selected_tiles = tiles; }
 
+  // Zaznacz ruch na mapie
+  void selectMovement(Movement movement);
+
   // Odznacz kafelki na mapie
-  void deselectTiles() { selected_tiles.clear(); }
+  void deselectTiles() { is_selected_movement = false; selected_tiles.clear(); }
 
   // Wyświetl zawartość planszy na standardowym wyjściu
   void display();

@@ -10,7 +10,7 @@
 const std::string GAME_TITLE = "Warcaby";
 
 // Ilość pól w każdym wymiarze
-const int TILES_COUNT = 10;
+const int TILES_COUNT = 8;
 
 // Długość boku pojedynczego kafelka(który jest kwadratem)
 const int TILE_SIZE = 64;

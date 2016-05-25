@@ -21,7 +21,7 @@ private:
 
   // Funkcja zwraca kolor kolejnego gracza z drzewa minimaks
   Color getColorFromDepth(int depth);
-  
+public:
   // Funkcja heurystyczna
   int evaluate(Board& board, const Color& color);
 public:
@@ -35,7 +35,7 @@ public:
   int alphabeta(Board board, int depth, int alpha, int beta, Movement& best_movement);
 
   // Funkcja startowa algorytmu minimax z cięciem alfa-beta
-  Movement minimax(Board board);
+  Movement getBestMovement(Board board);
   
 };
 

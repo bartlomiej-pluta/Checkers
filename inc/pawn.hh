@@ -16,6 +16,13 @@ enum Color
     CL_BLACK
   };
 
+// Zwróć kolor przeciwny do argumentu
+inline Color getOpposedColor(Color color)
+{
+	if(color == CL_WHITE) return CL_BLACK;
+	else return CL_WHITE;
+}
+
 // Klasa reprezentująca pionek
 class Pawn : public Object
 {

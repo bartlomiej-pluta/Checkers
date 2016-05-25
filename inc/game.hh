@@ -25,6 +25,14 @@ enum Player
     PL_AI
   };
 
+// Typ wyliczeniowy implementujący stany gry
+enum GameState
+  {
+    GS_PAUSED,
+    GS_RUNNING,
+    GS_WIN,
+    GS_LOSS
+  };
 
 // Klasa gry
 class Game
@@ -35,6 +43,9 @@ class Game
   // Plansza do gry w warcaby
   Board board;
 
+  // Stan gry
+  GameState game_state;
+  
   // Zaznaczony pionek
   Vector selected;
 
@@ -43,9 +54,6 @@ class Game
 
   // Tura(czy gracz, czy AI)
   Color round;
-
-  // Flaga oznaczająca sekwencję ruchów(aby gracz nie mógł zmienić pionka w trakcie gry)
-  bool movements_sequence;
   
   // Punkty gracza
   int player_score;
@@ -83,6 +91,12 @@ private:
 
   // Rysuje HUD (czyli ilość punktów etc.)
   void drawHUD();
+
+  // Aktualizuj stan gry
+  void gameUpdate();
+
+  // Wyświetl ekran końcowy
+  void displayTheEnd();
   
   // Główna pętla gry
   void loop();
@@ -90,7 +104,9 @@ private:
 public:
 
   // Konstruktor inicjalizujący parametry gry i wyzwalający pętlę główną gry
-  Game();
+  // player - kolor gracza (zawsze biały kolor zaczyna)
+  // ai - poziom AI (głębokość przeszukiwania drzewa gry przez algorytm minimax)
+  Game(Color player, int ai);
   
 };
 
