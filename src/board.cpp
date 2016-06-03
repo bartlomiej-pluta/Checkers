@@ -259,25 +259,6 @@ std::list<Movement> Board::getPossibleMovements(Vector position)
 		// Jeżeli ruch w dół-prawo jest możliwy (jest puste miejsce) dorzuć ruch do listy
 		if(position.x < TILES_COUNT-1 && position.y < TILES_COUNT-1)
 			if(!getPawn(position+Vector(1, 1))) movements.push_back(Movement(position, position+Vector(1, 1)));
-
-		// TODO zmodyfikowane ruchy
-		// TODO - zrobić, aby damka mogła robić długie ruchy (to samo dla bicia!)
-
-		// Jeżeli ruch w górę jest możliwy (jest puste miejsce) dorzuć ruch do listy
-		if(position.y >= 1)
-			;//if(!getPawn(position+Vector(0, -1))) movements.push_back(Movement(position, position+Vector(0, -1)));
-
-		// Jeżeli ruch w dół jest możliwy (jest puste miejsce) dorzuć ruch do listy
-		if(position.y < TILES_COUNT-1)
-			;//if(!getPawn(position+Vector(0, 1))) movements.push_back(Movement(position, position+Vector(0, 1)));
-
-		// Jeżeli ruch w lewo jest możliwy (jest puste miejsce) dorzuć ruch do listy
-		if(position.x >= 1)
-			;//if(!getPawn(position+Vector(-1, 0))) movements.push_back(Movement(position, position+Vector(-1, 0)));
-
-		// Jeżeli ruch w prawo jest możliwy (jest puste miejsce) dorzuć ruch do listy
-		if(position.x < TILES_COUNT-1)
-			;//if(!getPawn(position+Vector(1, 0))) movements.push_back(Movement(position, position+Vector(1, 0)));
 	}
 
 	// Jeżeli jest to zwykły pionek
@@ -456,3 +437,44 @@ void Board::selectMovement(Movement movement)
 	selected_tiles.push_back(movement.begin);
 	selected_tiles.push_back(movement.end);
 }
+
+void Board::clearBoard()
+{
+	for(int x = 0; x < TILES_COUNT; ++x)
+		for(int y = 0; y < TILES_COUNT; ++y)
+			if(board[x][y]) deletePawn(Vector(x, y));
+}
+
+bool Board::isEndangered(Vector position)
+{
+	// Na krawędziach pionek napewno nie jest zagrożony
+	if((position.x == 0) || (position.x == TILES_COUNT-1)) return false;
+	if((position.y == 0) || (position.y == TILES_COUNT-1)) return false;
+
+	Color player_color = getPawn(position)->getColor();
+
+
+	if(getPawn(position - Vector(1, 1)) 								&& 	// Jeżeli pole na północny zachód od pionka jest zajęte
+	   getPawn(position - Vector(1, 1))->getColor() != player_color		&&  // Należy do gracza przeciwnego
+	   !getPawn(position + Vector(1, 1))) 							  		// a pole na południowy wschód jest wolne
+		return true; 														// To pionek jest zagrożony biciem
+
+	// Analogicznie w pozostałych kierunkach
+	if(getPawn(position - Vector(-1, 1)) 									&&
+	   getPawn(position - Vector(-1, 1))->getColor() != player_color		&&
+	   !getPawn(position + Vector(-1, 1)))
+		return true;
+
+	if(getPawn(position - Vector(1, -1)) 									&&
+	   getPawn(position - Vector(1, -1))->getColor() != player_color		&&
+	   !getPawn(position + Vector(1, -1)))
+		return true;
+
+	if(getPawn(position - Vector(-1, -1)) 									&&
+	   getPawn(position - Vector(-1, -1))->getColor() != player_color		&&
+	   !getPawn(position + Vector(-1, -1)))
+		return true;
+
+	return false;
+}
+

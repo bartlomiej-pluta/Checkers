@@ -33,6 +33,9 @@ const int WINDOW_HEIGHT = TILES_COUNT * TILE_SIZE + 30;
 // Wartość nieskończoności
 const int INF = 9999;
 
+// Domyślny plik zapisu i odczytu stanu gry
+const std::string DEFAULT_STATE_FILE = "movements.txt";
+
 // Przedefiniowanie sf::Vector2f na RealVector
 typedef sf::Vector2f RealVector;
 

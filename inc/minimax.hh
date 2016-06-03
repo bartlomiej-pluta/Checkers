@@ -19,20 +19,18 @@ private:
 
 private:
 
-  // Funkcja zwraca kolor kolejnego gracza z drzewa minimaks
-  Color getColorFromDepth(int depth);
-public:
+  // Algorytm MiniMax z cięciem alfa-beta (funkcja zwraca wartość najlepszego ruchu, natomiast
+  // poprzez referencję zwraca najlepszy ruch best_movement, ruch wykonuje player
+  int alphabeta(Board board, int depth, int alpha, int beta, const Color& player, Movement& best_movement);
+
   // Funkcja heurystyczna
   int evaluate(Board& board, const Color& color);
+
 public:
 
   // Konstruktor przyjmuje parametry: maksymalna głębokość algorytmu MiniMaks oraz kolor pionków
   // sztucznej inteligencji
   MiniMax(int depth_max, Color ai_color) : DEPTH_MAX(depth_max), AI_COLOR(ai_color) {}
-
-  // Algorytm MiniMax z cięciem alfa-beta (funkcja zwraca wartość najlepszego ruchu, natomiast
-  // poprzez referencję zwraca najlepszy ruch best_movement
-  int alphabeta(Board board, int depth, int alpha, int beta, Movement& best_movement);
 
   // Funkcja startowa algorytmu minimax z cięciem alfa-beta
   Movement getBestMovement(Board board);

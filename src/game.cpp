@@ -53,11 +53,7 @@ bool Game::movePawn(Movement movement)
 	if((movement.getVector() == Vector(-2, -2)) || 		// Możliwości bicia zwykłego pionka
 			(movement.getVector() == Vector(-2, 2))  ||
 			(movement.getVector() == Vector(2, -2))  ||
-			(movement.getVector() == Vector(2, 2))   ||
-			(movement.getVector() == Vector(-2, 0))  || // + możliwości bicia damką
-			(movement.getVector() == Vector(0, 2))   ||
-			(movement.getVector() == Vector(2, 0))   ||
-			(movement.getVector() == Vector(0, -2)))
+			(movement.getVector() == Vector(2, 2)))
 		killPawn(movement.begin + movement.getVector()/2); // zbij zabijanego pionka
 
 	// Wykonaj ruch i zwróć sukces, jeśli się powiodło
@@ -108,11 +104,14 @@ void Game::executePlayerRound(sf::Vector2f mouse_position)
 	// to znaczy, że jest to ruch docelowy (czyli należy pionek przesunąć):
 	if(!ptr)
 	{
+		// Tworzymy ruch z zaznaczonych pozycji
+		Movement m(selected, position);
+
 		// Jeżeli pionek jest poprawnie zaznaczony
 		if(board.getPawn(selected))
 		{
 			// Przesuwamy pionek o ile to możliwe (kliknięte miejsce = position jest naszym docelowym kafelkiem)
-			if(movePawn(Movement(selected, position)))
+			if(movePawn(m))
 			{
 				// Jeżeli się udało, to aktualizujemy pozycję zaznaczonego pionka
 				selected = position;
@@ -122,6 +121,9 @@ void Game::executePlayerRound(sf::Vector2f mouse_position)
 
 				// Odznaczamy kafelki
 				board.deselectTiles();
+
+				// Dorzucamy ruch na stos
+				movements_list.push_back(m);
 
 				// i kończymy turę
 				round = getAIColor();
@@ -152,10 +154,7 @@ void Game::eventHandler()
 
 				// W przeciwnym wypadku zamknij okno
 				else window.close();
-
-
 			}
-
 		}
 	}
 }
@@ -182,6 +181,7 @@ void Game::loop()
 
 				// Ustaw turę na gracza
 				round = getPlayerColor();
+
 			}
 
 			// Aktualizuj stan gry
@@ -248,6 +248,16 @@ void Game::gameUpdate()
 		if(!board.getNumberOfBlackPawns()) game_state = GS_LOSS;
 		if(!board.getNumberOfWhitePawns()) game_state = GS_WIN;
 	}
+
+	// Jeżeli jest to już koniec gry
+	if(game_state == GS_WIN || game_state == GS_LOSS)
+	{
+		// to odznacz wszystkie pola
+		board.deselectTiles();
+
+		// i zapisz stan gry do pliku
+		saveState(DEFAULT_STATE_FILE);
+	}
 }
 
 void Game::displayTheEnd()
@@ -266,4 +276,19 @@ void Game::displayTheEnd()
 	text.setPosition(WINDOW_WIDTH/2-140, WINDOW_HEIGHT/2-60);
 	window.draw(text);
 
+}
+
+bool Game::saveState(std::string filename)
+{
+	// Otwieramy plik
+	std::fstream file(filename, std::ios::out);
+
+	// Jeżeli się nie udało - false;
+	if(!file.good()) return false;
+
+	// Zapisujemy całą liste dotychczasowych ruchów
+	int i = 0;
+	for(auto m: movements_list)
+		file << ++i << "# " << (!(i%2)?"Biały":"Czarny") << ":\t(" << m.begin.x << ", " << m.begin.y << ")\t->\t(" << m.end.x << ", " << m.end.y << ")" << std::endl;
+	return true;
 }

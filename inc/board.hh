@@ -60,6 +60,9 @@ public:
   // według zasad gry w warcaby
   void initBoard();
   
+  // Usuwa wszystkie pionki z planszy
+  void clearBoard();
+
   // Utwórz nowy pionek na zadanej pozycji
   Pawn* createPawn(Vector position, Color color);
   
@@ -78,6 +81,9 @@ public:
   // Promuj na damki te pionki, które doszły na linię promocji
   void upgrade();
   
+  // Czy pionek jest zagrożony biciem
+  bool isEndangered(Vector position);
+
   // Czy bicie z danej pozycji jest możliwe
   bool isPossibleBeating(Vector position);
 

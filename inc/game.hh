@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <fstream>
 #include <list>
 #include <algorithm>
 #include <SFML/Window.hpp>
@@ -64,6 +65,9 @@ class Game
   // AI
   MiniMax minimax;
 
+  // Lista ruchów
+  std::list<Movement> movements_list;
+
 private:
   
   // Zabij pionka (doliczając do tego punkty)
@@ -98,6 +102,9 @@ private:
   // Wyświetl ekran końcowy
   void displayTheEnd();
   
+  // Zapisz stan gry do pliku
+  bool saveState(std::string filename);
+
   // Główna pętla gry
   void loop();
   

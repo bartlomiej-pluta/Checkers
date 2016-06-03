@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 	{
 		std::cout << "Użycie: checkers COLOR AI\n\tCOLOR - kolor gracza\n\tAI - poziom AI" << std::endl;
 		color = CL_WHITE;
-		ai = 6;
+		ai = 8;
 	}
 	else
 	{
